@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comandas - Sistema de Gestão</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h1 class="nav-title">🍢 Sistema de Gestão</h1>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="comandas.html" class="active">Comandas</a>
+                <a href="produtos.html">Produtos</a>
+                <a href="financeiro.html">Financeiro</a>
+            </div>
+            <div class="nav-user">
+                <span id="userInfo"></span>
+                <button onclick="logout()" class="btn btn-secondary">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h2>Controle de Comandas</h2>
+            <button onclick="openComandaModal()" class="btn btn-primary">Nova Comanda</button>
+        </div>
+
+        <div class="filter-bar">
+            <select id="filterStatus" onchange="filterComandas()">
+                <option value="all">Todas</option>
+                <option value="aberta">Abertas</option>
+                <option value="finalizada">Finalizadas</option>
+            </select>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Número/Nome</th>
+                        <th>Produtos</th>
+                        <th>Quantidade</th>
+                        <th>Valor Total</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="comandasTableBody">
+                    <!-- Comandas serão inseridas aqui via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal de Comanda -->
+    <div id="comandaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nova Comanda</h3>
+                <span class="close" onclick="closeComandaModal()">&times;</span>
+            </div>
+            <form id="comandaForm">
+                <input type="hidden" id="comandaId">
+                <div class="form-group">
+                    <label for="comandaNumero">Número da Comanda</label>
+                    <input type="text" id="comandaNumero" placeholder="Ex: 1, 2, Mesa 5, João" required>
+                    <small style="color: var(--text-secondary); font-size: 12px;">Pode ser um número ou um nome (ex: Mesa 5, João Silva)</small>
+                </div>
+                <div class="form-group">
+                    <label for="comandaNome">Nome do Cliente (Opcional)</label>
+                    <input type="text" id="comandaNome" placeholder="Ex: João Silva">
+                </div>
+                
+                <div class="form-group">
+                    <label>Produtos</label>
+                    <div id="produtosComanda">
+                        <!-- Produtos serão adicionados aqui -->
+                    </div>
+                    <button type="button" onclick="addProdutoToComanda()" class="btn btn-secondary">Adicionar Produto</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="comandaStatus">Status</label>
+                    <select id="comandaStatus" required>
+                        <option value="aberta">Aberta</option>
+                        <option value="finalizada">Finalizada</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Valor Total</label>
+                    <p class="total-value" id="comandaTotal">R$ 0,00</p>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" onclick="closeComandaModal()" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Visualização de Pedidos -->
+    <div id="visualizarModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="visualizarTitle" style="font-size: 18px;">Visualizar Pedidos</h3>
+                <span class="close" onclick="closeVisualizarModal()">&times;</span>
+            </div>
+            <div id="visualizarContent" style="padding: 15px; max-height: 70vh; overflow-y: auto;">
+                <!-- Conteúdo será preenchido via JavaScript -->
+            </div>
+            <div class="modal-actions">
+                <button type="button" onclick="closeVisualizarModal()" class="btn btn-secondary">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/comandas.js"></script>
+</body>
+</html>
+
