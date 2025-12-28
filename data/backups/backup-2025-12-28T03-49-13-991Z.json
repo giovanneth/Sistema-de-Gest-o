@@ -1,0 +1,33 @@
+{
+  "createdAt": "2025-12-28T03:49:13.991Z",
+  "users": [
+    {
+      "id": "1766893650693",
+      "username": "giovanne.thy@gmail.com",
+      "email": "giovanne.thy@gmail.com",
+      "password": "@211805p",
+      "createdAt": "2025-12-28T03:47:30.693Z",
+      "updatedAt": "2025-12-28T03:47:56.795Z"
+    },
+    {
+      "id": "1766893660610",
+      "username": "giovanneltda@gmail.com",
+      "email": "giovanneltda@gmail.com",
+      "password": "@211805p",
+      "createdAt": "2025-12-28T03:47:40.610Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "1766893734795",
+      "userId": "1766893660610",
+      "nome": "Espetinho de Carne",
+      "categoria": "Espetinhos",
+      "preco": 8,
+      "estoque": 10,
+      "createdAt": "2025-12-28T03:48:54.795Z"
+    }
+  ],
+  "comandas": [],
+  "transacoes": []
+}

@@ -78,12 +78,12 @@ function renderTransacoes() {
         const tipoText = transacao.tipo === 'entrada' ? 'Entrada' : 'Saída';
         
         row.innerHTML = `
-            <td>${formatDate(transacao.data)}</td>
-            <td><span class="${tipoClass}">${tipoText}</span></td>
-            <td>${transacao.descricao}</td>
-            <td>${transacao.categoria}</td>
-            <td class="${tipoClass}">${transacao.tipo === 'entrada' ? '+' : '-'} ${formatCurrency(transacao.valor)}</td>
-            <td>
+            <td data-label="Data">${formatDate(transacao.data)}</td>
+            <td data-label="Tipo"><span class="${tipoClass}">${tipoText}</span></td>
+            <td data-label="Descrição">${transacao.descricao}</td>
+            <td data-label="Categoria">${transacao.categoria}</td>
+            <td data-label="Valor" class="${tipoClass}">${transacao.tipo === 'entrada' ? '+' : '-'} ${formatCurrency(transacao.valor)}</td>
+            <td class="actions-cell" data-label="Ações">
                 <button onclick="editTransacao('${transacao.id}')" class="btn btn-secondary btn-sm">Editar</button>
                 <button onclick="deleteTransacao('${transacao.id}')" class="btn btn-danger btn-sm">Excluir</button>
             </td>

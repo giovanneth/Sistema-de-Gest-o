@@ -81,11 +81,11 @@ function renderProdutos() {
             const estoqueClass = produto.estoque === 0 ? 'estoque-zero' : produto.estoque < 10 ? 'estoque-baixo' : '';
             row.className = estoqueClass;
             row.innerHTML = `
-                <td>${produto.nome}</td>
-                <td style="color: var(--text-secondary);">${produto.categoria}</td>
-                <td>${formatCurrency(produto.preco)}</td>
-                <td><strong>${produto.estoque}</strong></td>
-                <td>
+                <td data-label="Nome">${produto.nome}</td>
+                <td data-label="Categoria" style="color: var(--text-secondary);">${produto.categoria}</td>
+                <td data-label="Preço">${formatCurrency(produto.preco)}</td>
+                <td data-label="Estoque"><strong>${produto.estoque}</strong></td>
+                <td class="actions-cell" data-label="Ações">
                     <button onclick="openEstoqueModal('${produto.id}')" class="btn btn-success btn-sm" title="Adicionar estoque">+ Estoque</button>
                     <button onclick="editProduto('${produto.id}')" class="btn btn-secondary btn-sm">Editar</button>
                     <button onclick="deleteProduto('${produto.id}')" class="btn btn-danger btn-sm">Excluir</button>

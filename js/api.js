@@ -135,3 +135,27 @@ async function deleteTransacao(id) {
     });
 }
 
+// ============= ADMIN =============
+
+async function adminFetchAll() {
+    return await apiRequest('/admin/data');
+}
+
+async function adminBackup() {
+    return await apiRequest('/admin/backup', {
+        method: 'POST'
+    });
+}
+
+async function adminUpdateUser(id, payload) {
+    return await apiRequest(`/admin/users/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+    });
+}
+
+async function adminDeleteUser(id) {
+    return await apiRequest(`/admin/users/${id}`, {
+        method: 'DELETE'
+    });
+}

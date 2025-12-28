@@ -26,6 +26,7 @@ function checkAuth() {
 async function handleLogin() {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
+    const isEmailUsername = username.includes('@');
     
     if (!username || !password) {
         alert('Por favor, preencha todos os campos.');
@@ -41,6 +42,10 @@ async function handleLogin() {
             
             // Se login funcionou, verificar se tem user
             if (result && result.user) {
+                // Garantir email preenchido
+                if (!result.user.email && isEmailUsername) {
+                    result.user.email = username;
+                }
                 // Salvar informações do usuário
                 localStorage.setItem('currentUserId', result.user.id);
                 localStorage.setItem('currentUser', JSON.stringify(result.user));
@@ -56,6 +61,9 @@ async function handleLogin() {
                     result = await register(username, null, password);
                     
                     if (result && result.user) {
+                        if (!result.user.email && isEmailUsername) {
+                            result.user.email = username;
+                        }
                         // Novo usuário criado com sucesso
                         localStorage.setItem('currentUserId', result.user.id);
                         localStorage.setItem('currentUser', JSON.stringify(result.user));

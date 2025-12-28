@@ -7,6 +7,7 @@ const cors = require('cors');
 const app = express();
 const PORT = 3000;
 const DATA_DIR = path.join(__dirname, 'data');
+const ADMIN_EMAIL = 'giovanneltda@gmail.com';
 
 // Middleware
 app.use(cors());
@@ -42,6 +43,28 @@ async function writeJsonFile(filename, data) {
     await fs.writeFile(filepath, JSON.stringify(data, null, 2), 'utf8');
 }
 
+// Helper: validar admin
+async function requireAdmin(req, res) {
+    const userId = req.headers['user-id'];
+    if (!userId) {
+        res.status(401).json({ error: 'Usuário não autenticado' });
+        return null;
+    }
+
+    const users = await readJsonFile('users.json');
+    const adminUser = users.find(u => u.id === userId);
+    const emailMatch = adminUser && adminUser.email && adminUser.email.toLowerCase() === ADMIN_EMAIL;
+    const usernameMatch = adminUser && adminUser.username && adminUser.username.toLowerCase() === ADMIN_EMAIL;
+    const isAdmin = emailMatch || usernameMatch;
+
+    if (!isAdmin) {
+        res.status(403).json({ error: 'Acesso restrito ao administrador' });
+        return null;
+    }
+
+    return { users, adminUser };
+}
+
 // ============= ROTAS DE AUTENTICAÇÃO =============
 
 // Login
@@ -68,6 +91,12 @@ app.post('/api/login', async (req, res) => {
             // Senha incorreta
             res.status(401).json({ error: 'Senha incorreta' });
             return;
+        }
+
+        // Se o usuário não tiver email salvo e o login foi via email, persistir
+        if (!user.email && username && username.includes('@')) {
+            user.email = username;
+            await writeJsonFile('users.json', users);
         }
         
         // Login bem-sucedido
@@ -105,10 +134,12 @@ app.post('/api/register', async (req, res) => {
             return res.status(400).json({ error: 'Usuário ou email já cadastrado' });
         }
         
+        const derivedEmail = email || (username && username.includes('@') ? username : null);
+
         const newUser = {
             id: Date.now().toString(),
             username,
-            email: email || null,
+            email: derivedEmail,
             password,
             createdAt: new Date().toISOString()
         };
@@ -450,6 +481,163 @@ app.delete('/api/transacoes/:id', async (req, res) => {
     }
 });
 
+// ============= ROTAS DE ADMIN (apenas email autorizado) =============
+
+// Resumo completo
+app.get('/api/admin/data', async (req, res) => {
+    try {
+        const adminContext = await requireAdmin(req, res);
+        if (!adminContext) return;
+
+        const [products, comandas, transacoes] = await Promise.all([
+            readJsonFile('products.json'),
+            readJsonFile('comandas.json'),
+            readJsonFile('transacoes.json')
+        ]);
+
+        res.json({
+            users: adminContext.users,
+            products,
+            comandas,
+            transacoes,
+            metrics: {
+                users: adminContext.users.length,
+                products: products.length,
+                comandas: comandas.length,
+                transacoes: transacoes.length
+            }
+        });
+    } catch (error) {
+        console.error('Erro ao carregar dados de admin:', error);
+        res.status(500).json({ error: 'Erro no servidor' });
+    }
+});
+
+// Backup completo (gera arquivo na pasta data/backups e devolve payload)
+app.post('/api/admin/backup', async (req, res) => {
+    try {
+        const adminContext = await requireAdmin(req, res);
+        if (!adminContext) return;
+
+        const [products, comandas, transacoes] = await Promise.all([
+            readJsonFile('products.json'),
+            readJsonFile('comandas.json'),
+            readJsonFile('transacoes.json')
+        ]);
+
+        const backup = {
+            createdAt: new Date().toISOString(),
+            users: adminContext.users,
+            products,
+            comandas,
+            transacoes
+        };
+
+        const backupDir = path.join(DATA_DIR, 'backups');
+        await fs.mkdir(backupDir, { recursive: true });
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `backup-${timestamp}.json`;
+        await fs.writeFile(path.join(backupDir, filename), JSON.stringify(backup, null, 2), 'utf8');
+
+        res.json({
+            success: true,
+            filename,
+            backup
+        });
+    } catch (error) {
+        console.error('Erro ao criar backup:', error);
+        res.status(500).json({ error: 'Erro no servidor' });
+    }
+});
+
+// Atualizar usuário (nome/email/senha)
+app.put('/api/admin/users/:id', async (req, res) => {
+    try {
+        const adminContext = await requireAdmin(req, res);
+        if (!adminContext) return;
+
+        const { id } = req.params;
+        const { username, email, password } = req.body;
+        const users = adminContext.users;
+        const index = users.findIndex(u => u.id === id);
+
+        if (index === -1) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        // Impedir emails duplicados
+        if (email) {
+            const emailExists = users.some(u => u.id !== id && u.email === email);
+            if (emailExists) {
+                return res.status(400).json({ error: 'Email já utilizado por outro usuário' });
+            }
+        }
+
+        users[index] = {
+            ...users[index],
+            username: username || users[index].username,
+            email: email || users[index].email,
+            password: password ? password : users[index].password,
+            updatedAt: new Date().toISOString()
+        };
+
+        await writeJsonFile('users.json', users);
+
+        const { password: _removed, ...safeUser } = users[index];
+        res.json({ success: true, user: safeUser });
+    } catch (error) {
+        console.error('Erro ao atualizar usuário:', error);
+        res.status(500).json({ error: 'Erro no servidor' });
+    }
+});
+
+// Deletar usuário e dados associados
+app.delete('/api/admin/users/:id', async (req, res) => {
+    try {
+        const adminContext = await requireAdmin(req, res);
+        if (!adminContext) return;
+
+        const { id } = req.params;
+        const users = adminContext.users;
+        const exists = users.find(u => u.id === id);
+
+        if (!exists) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        const filteredUsers = users.filter(u => u.id !== id);
+        const [products, comandas, transacoes] = await Promise.all([
+            readJsonFile('products.json'),
+            readJsonFile('comandas.json'),
+            readJsonFile('transacoes.json')
+        ]);
+
+        const cleanedProducts = products.filter(p => p.userId !== id);
+        const cleanedComandas = comandas.filter(c => c.userId !== id);
+        const cleanedTransacoes = transacoes.filter(t => t.userId !== id);
+
+        await Promise.all([
+            writeJsonFile('users.json', filteredUsers),
+            writeJsonFile('products.json', cleanedProducts),
+            writeJsonFile('comandas.json', cleanedComandas),
+            writeJsonFile('transacoes.json', cleanedTransacoes)
+        ]);
+
+        res.json({
+            success: true,
+            removedUserId: id,
+            removedData: {
+                products: products.length - cleanedProducts.length,
+                comandas: comandas.length - cleanedComandas.length,
+                transacoes: transacoes.length - cleanedTransacoes.length
+            }
+        });
+    } catch (error) {
+        console.error('Erro ao deletar usuário:', error);
+        res.status(500).json({ error: 'Erro no servidor' });
+    }
+});
+
 // ============= INICIALIZAR SERVIDOR =============
 
 async function startServer() {
@@ -494,4 +682,3 @@ async function startServer() {
 }
 
 startServer();
-

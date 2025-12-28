@@ -45,13 +45,30 @@ function closeMenu() {
 }
 
 // Event listeners
-document.addEventListener('DOMContentLoaded', function() {
+function applyAdminVisibility() {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) return;
+    try {
+        const parsed = JSON.parse(currentUser);
+        const isAdmin = (parsed.email && parsed.email.toLowerCase() === 'giovanneltda@gmail.com') ||
+                        (parsed.username && parsed.username.toLowerCase() === 'giovanneltda@gmail.com');
+        const adminItems = document.querySelectorAll('.admin-only');
+        adminItems.forEach(item => {
+            item.style.display = isAdmin ? 'block' : 'none';
+        });
+    } catch (e) {
+        // ignore
+    }
+}
+
+function setupMenu() {
     const sidebar = document.querySelector('.sidebar');
     const menuToggle = document.querySelector('.menu-toggle');
     const overlay = document.querySelector('.sidebar-overlay');
     
     // Adicionar event listener ao botão de toggle
-    if (menuToggle) {
+    if (menuToggle && !menuToggle.dataset.bound) {
+        menuToggle.dataset.bound = 'true';
         menuToggle.addEventListener('click', function(e) {
             e.preventDefault();
             toggleMenu(e);
@@ -59,12 +76,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Fechar menu ao clicar no overlay
-    if (overlay) {
+    if (overlay && !overlay.dataset.bound) {
+        overlay.dataset.bound = 'true';
         overlay.addEventListener('click', closeMenu);
     }
     
     // Fechar menu ao clicar em um link (mobile)
-    if (sidebar) {
+    if (sidebar && !sidebar.dataset.bound) {
+        sidebar.dataset.bound = 'true';
         const links = sidebar.querySelectorAll('.sidebar-menu-link');
         links.forEach(link => {
             link.addEventListener('click', function() {
@@ -90,24 +109,42 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    // Fechar menu ao redimensionar para desktop
-    window.addEventListener('resize', function() {
-        if (window.innerWidth > 768) {
-            // Em desktop, sidebar sempre visível, não precisa fechar
-        } else {
-            // Em mobile, pode manter fechado ou abrir conforme preferência
-        }
-    });
-    
-    // Fechar menu ao pressionar ESC
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closeMenu();
-        }
-    });
+
+    applyAdminVisibility();
+}
+
+// Delegação extra para garantir o toggle mesmo se listeners não ligarem
+document.addEventListener('click', function(event) {
+    const trigger = event.target.closest('.menu-toggle');
+    if (trigger) {
+        toggleMenu(event);
+    }
+});
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupMenu);
+} else {
+    setupMenu();
+}
+
+// Fechar menu ao redimensionar para desktop
+window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+        // Em desktop, sidebar sempre visível, não precisa fechar
+    } else {
+        // Em mobile, pode manter fechado ou abrir conforme preferência
+    }
+});
+
+// Fechar menu ao pressionar ESC
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeMenu();
+    }
 });
 
 // Garantir que as funções estejam disponíveis globalmente
 window.toggleMenu = toggleMenu;
 window.closeMenu = closeMenu;
+window.setupMenu = setupMenu;
+window.applyAdminVisibility = applyAdminVisibility;

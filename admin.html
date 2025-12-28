@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração - Sistema de Gestão</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-admin">
+    <div id="menu-include"></div>
+    <script src="js/include.js"></script>
+
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <p class="page-kicker">Acesso restrito ao administrador</p>
+                <h2>Central Administrativa</h2>
+                <p class="muted">Backups, gestão de usuários e visão completa de tudo que acontece no sistema.</p>
+            </div>
+            <div class="admin-actions">
+                <button class="btn btn-primary" id="backupBtn">Gerar backup completo</button>
+            </div>
+        </div>
+
+        <section class="admin-hero">
+            <div>
+                <p class="badge-critical">Apenas <strong>giovanneltda@gmail.com</strong></p>
+                <h3>Gestora total do ambiente</h3>
+                <p class="muted">Visualize todos os usuários, produtos, comandas e transações. Faça backup instantâneo de tudo.</p>
+                <ul class="admin-list">
+                    <li>Download de backup com todos os dados (JSON)</li>
+                    <li>Reset e edição de usuários e senhas</li>
+                    <li>Limpeza de dados ao excluir usuários</li>
+                </ul>
+            </div>
+            <div class="admin-metrics">
+                <div class="metric-card">
+                    <p>Usuários</p>
+                    <strong id="metricUsers">0</strong>
+                </div>
+                <div class="metric-card">
+                    <p>Produtos</p>
+                    <strong id="metricProducts">0</strong>
+                </div>
+                <div class="metric-card">
+                    <p>Comandas</p>
+                    <strong id="metricComandas">0</strong>
+                </div>
+                <div class="metric-card">
+                    <p>Transações</p>
+                    <strong id="metricTransacoes">0</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-backup">
+            <div>
+                <h3>Backup do Sistema</h3>
+                <p class="muted">Gera um arquivo JSON com usuários, produtos, comandas e transações de todos.</p>
+            </div>
+            <div class="backup-status" id="backupStatus">Nenhum backup gerado nesta sessão.</div>
+        </section>
+
+        <section class="admin-users">
+            <div class="section-header">
+                <h3>Gestão de Usuários</h3>
+                <p class="muted">Edite dados, redefina senha ou exclua usuários (remove também produtos, comandas e transações vinculadas).</p>
+            </div>
+            <div class="table-container">
+                <table class="data-table responsive-table">
+                    <thead>
+                        <tr>
+                            <th>Usuário</th>
+                            <th>Email</th>
+                            <th>Criado em</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr><td colspan="4" style="padding: 30px; text-align: center; color: var(--text-secondary);">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
