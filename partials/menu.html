@@ -1,0 +1,77 @@
+<!-- Partial de menu (navbar + sidebar + overlay) -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-left">
+            <button class="menu-toggle" onclick="toggleMenu()" aria-label="Abrir menu principal">
+                <span class="menu-burger" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </button>
+            <div class="nav-brand">
+                <div class="brand-badge">SG</div>
+                <div class="brand-copy">
+                    <h1 class="nav-title">Sistema de Gestão</h1>
+                    <span class="nav-subtitle">Painel do negócio</span>
+                </div>
+            </div>
+        </div>
+        <div class="nav-user">
+            <span id="userInfo"></span>
+            <button onclick="logout()" class="btn btn-secondary">Sair</button>
+        </div>
+    </div>
+</nav>
+
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h2 class="sidebar-title">Navegação</h2>
+    </div>
+    <ul class="sidebar-menu">
+        <li class="sidebar-menu-item">
+            <a href="dashboard.html" class="sidebar-menu-link">
+                <span class="sidebar-menu-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 13h8V3H3v10zM3 21h8v-6H3v6zM13 21h8V11h-8v10zM13 3v6h8V3h-8z" fill="currentColor"/>
+                    </svg>
+                </span>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li class="sidebar-menu-item">
+            <a href="comandas.html" class="sidebar-menu-link">
+                <span class="sidebar-menu-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zM3 5v14h18V5H3zm16 12H5V7h14v10z" fill="currentColor"/>
+                    </svg>
+                </span>
+                <span>Comandas</span>
+            </a>
+        </li>
+        <li class="sidebar-menu-item">
+            <a href="produtos.html" class="sidebar-menu-link">
+                <span class="sidebar-menu-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zm0 7.5L4.2 7 12 3.5 19.8 7 12 9.5zM2 17l10 5 10-5v-4L12 22 2 13v4z" fill="currentColor"/>
+                    </svg>
+                </span>
+                <span>Produtos</span>
+            </a>
+        </li>
+        <li class="sidebar-menu-item">
+            <a href="financeiro.html" class="sidebar-menu-link">
+                <span class="sidebar-menu-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4M12 6a6 6 0 100 12 6 6 0 000-12z" fill="currentColor"/>
+                    </svg>
+                </span>
+                <span>Financeiro</span>
+            </a>
+        </li>
+    </ul>
+</aside>
+
+<div class="sidebar-overlay"></div>
+
+<!-- fim partial -->
